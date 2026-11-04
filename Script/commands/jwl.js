@@ -2,10 +2,10 @@ module.exports.config = {
   name: "jwl",
   version: "1.0.2",
   hasPermssion: 0,
-  credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
-  description: "জুয়েল লিখলে ☠️ রিয়েক্ট দিবে",
+  credits: "Rayhan",
+  description: "রায়হান লিখলে ☠️ রিয়েক্ট দিবে",
   commandCategory: "no prefix",
-  usages: "জুয়েল",
+  usages: "রায়হান",
   cooldowns: 5
 };
 
@@ -15,9 +15,9 @@ const clean = s => String(s)
   .toLowerCase();
 
 const triggers = [
-  "জুয়েল", "জুয়েল ভাই", "জুয়েল ভাইয়া", "জুয়েল বস",
-  "juwel", "juwel vai", "juwel bhai", "jewel", "jwl",
-  "mr juwel"
+  "রায়হান", "রায়হান ভাই", "রায়হান ভাইয়া", "রায়হান বস",
+  "rayhan", "rayhan vai", "rayhan bhai", "rayhan", "rayhan",
+  "mr rayhan"
 ].map(clean);
 
 module.exports.handleEvent = function ({ api, event }) {
