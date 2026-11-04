@@ -2,7 +2,7 @@ module.exports.config = {
   name: "info",
   version: "2.0.0",
   hasPermssion: 0,
-  credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
+  credits: "Rayhan",
   description: "Bot information command",
   commandCategory: "For users",
   hide: true,
@@ -103,11 +103,11 @@ module.exports.run = async function ({ api, event, args, Users, Threads }) {
 
   const msg =
 `╭━━━━━━━━━━━━━━━━━━━━━━╮
-      ✨ 𝐑𝐈𝐘𝐀 𝐁𝐎𝐓 ✨
+      ✨ 𝐑𝐀𝐘𝐇𝐀𝐍 𝐁𝐎𝐓 ✨
    𝐈𝐍𝐅𝐎𝐑𝐌𝐀𝐓𝐈𝐎𝐍 𝐂𝐀𝐑𝐃
 ╰━━━━━━━━━━━━━━━━━━━━━━╯
 ┏━━━ 🤖 𝐁𝐎𝐓 ━━━━━━━━━━
-┃ ➤ 𝐍𝐚𝐦𝐞       ⟫ 𝐑𝐈𝐘𝐀
+┃ ➤ 𝐍𝐚𝐦𝐞       ⟫ 𝐑𝐀𝐘𝐇𝐀𝐍
 ┃ ➤ 𝐏𝐫𝐞𝐟𝐢𝐱     ⟫ ${config.PREFIX}
 ┃ ➤ 𝐁𝐨𝐱 𝐏𝐫𝐞𝐟𝐢𝐱 ⟫ ${prefix}
 ┃ ➤ 𝐌𝐨𝐝𝐮𝐥𝐞𝐬    ⟫ ${commands.size}
@@ -146,14 +146,14 @@ module.exports.run = async function ({ api, event, args, Users, Threads }) {
 ┃ ➤ 𝐈𝐧𝐟𝐨 𝐔𝐬𝐞𝐝 ⟫ ${usedCount} বার
 ┗━━━━━━━━━━━━━━━━━━━━━
 ┏━━━ 👑 𝐎𝐖𝐍𝐄𝐑 ━━━━━━━
-┃ ➤ 𝐍𝐚𝐦𝐞 ⟫ 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐
-┃ ➤ 𝐅𝐁   ⟫ fb.com/mrjuwel444
-┃ ➤ 𝐌𝐒𝐆  ⟫ m.me/mrjuwel444
-┃ ➤ 𝐖𝐀   ⟫ +8801943488192
+┃ ➤ 𝐍𝐚𝐦𝐞 ⟫ Rayhan
+┃ ➤ 𝐅𝐁   ⟫ https://www.facebook.com/share/1F2Xp64Huj/
+┃ ➤ 𝐌𝐒𝐆  ⟫ https://www.facebook.com/share/1F2Xp64Huj/
+┃ ➤ 𝐖𝐀   ⟫ 01638759227
 ┗━━━━━━━━━━━━━━━━━━━━━
 ╭━━━━━━━━━━━━━━━━━━━━━━╮
   ❤️ 𝐓𝐡𝐚𝐧𝐤𝐬 𝐅𝐨𝐫 𝐔𝐬𝐢𝐧𝐠 ❤️
-     🌺 𝐑𝐈𝐘𝐀 𝐁𝐎𝐓 🌺
+     🌺 𝐑𝐀𝐘𝐇𝐀𝐍 𝐁𝐎𝐓 🌺
 ╰━━━━━━━━━━━━━━━━━━━━━━╯`;
 
   const imgLinks = [
@@ -187,6 +187,6 @@ module.exports.run = async function ({ api, event, args, Users, Threads }) {
 };
 
 // 🔒 Credits Protection
-if (module.exports.config.credits !== "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐") {
-  throw new Error("⚠️ Credits পরিবর্তন করা হয়েছে! অনুগ্রহ করে আসল ক্রেডিট ব্যবহার করুন।");
+if (module.exports.config.credits !== "Rayhan") {
+  throw new Error("⚠️ Credits পরিবর্তন করা হয়েছে!");
 }
