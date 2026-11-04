@@ -19,12 +19,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          check-latest: true
 
       - name: Install Dependencies
         run: npm install
 
       - name: Start GoatBot
         run: npm start
-
         
