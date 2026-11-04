@@ -1,98 +1,96 @@
 const axios = require("axios");
-const fs = require("fs-extra");
+const fs = require("fs");
 const path = require("path");
 
-module.exports.config = {
-  name: "kiss",
-  version: "1.0.0",
-  hasPermssion: 0,
-  credits: "SHAHADAT SAHU", //please don't change credit
-  description: "Generate a couple kiss image using sender and target Facebook UID via Avatar Canvas API",
-  commandCategory: "banner",
-  usePrefix: true,
-  usages: "[@mention | reply]",
-  cooldowns: 5,
-  dependencies: {
-    "axios": "",
-    "fs-extra": "",
-    "path": ""
-  }
+const mahmud = async () => {
+        const base = await axios.get("https://raw.githubusercontent.com/aura-mahmud/HINATA/main/baseApiUrl.json");
+        return base.data.mahmud;
 };
 
-module.exports.run = async function ({ event, api }) {
-  const { threadID, messageID, senderID, mentions, messageReply } = event;
+module.exports = {
+        config: {
+                name: "kiss",
+                aliases: ["চুমা", "কিস"],
+                version: "1.7",
+                author: "MahMUD",
+                countDown: 5,
+                role: 0,
+                description: {
+                        bn: "কাউকে মেনশন দিয়ে একটি রোমান্টিক কিস ইমেজ তৈরি করুন",
+                        en: "Generate a romantic kiss image by mentioning someone",
+                        vi: "Tạo hình ảnh hôn lãng mạn bằng cách gắn thẻ ai đó"
+                },
+                category: "love",
+                guide: {
+                        bn: '   {pn} <@tag>: কাউকে কিস করতে ট্যাগ করুন',
+                        en: '   {pn} <@tag>: Tag someone to kiss',
+                        vi: '   {pn} <@tag>: Gắn thẻ ai đó để hôn'
+                }
+        },
 
-  let targetID = null;
+        langs: {
+                bn: {
+                        noTarget: "× বেবি, কিস করার জন্য কাউকে তো মেনশন দাও! 💋",
+                        wait: "তোমার কিস ইমেজটি তৈরি করছি... একটু অপেক্ষা করো বেবি! <😘",
+                        success: "এই নাও তোমাদের কিস ইমেজ বেবি! 🙈",
+                        error: "× সমস্যা হয়েছে: %1। প্রয়োজনে Contact MahMUD।"
+                },
+                en: {
+                        noTarget: "× Baby, please mention someone to kiss! 💋",
+                        wait: "Generating your kiss image... Please wait a moment baby! <😘",
+                        success: "Here’s your kiss image baby! 🙈",
+                        error: "× API error: %1. Contact MahMUD for help."
+                },
+                vi: {
+                        noTarget: "× Cưng ơi, hãy gắn thẻ ai đó để hôn đi! 💋",
+                        wait: "Đang tạo hình ảnh hôn cho cưng... Chờ chút nhé! <😘",
+                        success: "Ảnh hôn của cưng đây! 🙈",
+                        error: "× Lỗi: %1. Liên hệ MahMUD để hỗ trợ."
+                }
+        },
 
-  if (mentions && Object.keys(mentions).length > 0) {
-    targetID = Object.keys(mentions)[0];
-  } else if (messageReply && messageReply.senderID) {
-    targetID = messageReply.senderID;
-  }
+        onStart: async function ({ api, event, message, getLang }) {
+                const authorName = String.fromCharCode(77, 97, 104, 77, 85, 68);
+                if (this.config.author !== authorName) {
+                        return api.sendMessage("You are not authorized to change the author name.", event.threadID, event.messageID);
+                }
 
-  if (!targetID) {
-    return api.sendMessage(
-      "Please reply or mention someone......",
-      threadID,
-      messageID
-    );
-  }
+                const mentions = Object.keys(event.mentions);
+                if (mentions.length === 0) return message.reply(getLang("noTarget"));
 
-  try {
-    const apiList = await axios.get(
-      "https://raw.githubusercontent.com/shahadat-sahu/SAHU-API/refs/heads/main/SAHU-API.json"
-    );
+                const senderID = event.senderID;
+                const targetID = mentions[0];
+                const cacheDir = path.join(__dirname, "cache");
+                if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
+                const imgPath = path.join(cacheDir, `kiss_${senderID}_${targetID}.png`);
 
-    const AVATAR_CANVAS_API = apiList.data.AvatarCanvas;
+                try {
+                        api.setMessageReaction("😘", event.messageID, () => {}, true);
+                        const waitMsg = await message.reply(getLang("wait"));
 
-    const res = await axios.post(
-      `${AVATAR_CANVAS_API}/api`,
-      {
-        cmd: "kiss",
-        senderID,
-        targetID
-      },
-      { responseType: "arraybuffer", timeout: 30000 }
-    );
+                        const base = await mahmud();
+                        const response = await axios.post(`${base}/api/kiss`, 
+                                { senderID, targetID }, 
+                                { responseType: "arraybuffer" }
+                        );
 
-    const imgPath = path.join(
-      __dirname,
-      "cache",
-      `kiss_${senderID}_${targetID}.png`
-    );
+                        fs.writeFileSync(imgPath, Buffer.from(response.data));
 
-    fs.writeFileSync(imgPath, res.data);
+                        if (waitMsg?.messageID) api.unsendMessage(waitMsg.messageID);
 
-    const captions = [
-      "কারণে অকারণে প্রতিদিন নিয়ম করে, তোমার মায়াতে জড়িয়ে পড়ছি আমি বারেবার!🌷",
-      "তোমাকে কেন ভালোবাসি তার কোন বিশেষ কারণ আমার জানা নাই! কিন্তু তোমার কাছে সারাজীবন থেকে যাওয়ার হাজারটা কারণ আমার কাছে আছে!💚",
-      "তোমার সাথে কাটানো সময়গুলোর কথা চিন্তা করলে মনে হয়, এই এক জনম তোমার সাথে অনেক কম সময়!😘",
-      "প্রিয় তুমি কি আমার জীবনের সেই গল্প হবে? যেই গল্পের শুরু থাকবে, কিন্তু কোনো শেষ থাকবে না!♥️",
-      "তুমি পাশে থাকলে সবকিছু সুন্দর মনে হয়, জীবন যেন একটা মধুর কবিতায় রূপ নেয়!😍",
-      "তোমাকে ছাড়া জীবনটা অসম্পূর্ণ, তুমি আমার ভালোবাসার পূর্ণতা!🧡",
-      "তুমি আমার স্বপ্ন, তুমি আমার জীবনের প্রতিটি সুন্দর মুহূর্ত!🌻",
-      "আমার চোখে তোমার অস্থিত্ব খোঁজতে এসোনা, হারিয়ে যাবে! কেননা আমার পুরোটা-জুরেই তোমারই নির্বাক আনাগোনা!🌺",
-      "তোমাতে শুরু তোমাতেই শেষ, তুমি না থাকলে আমাদের গল্প এখানেই শেষ!😘",
-      "ভালোবাসা যদি কোনো অনুভূতি হয়, তাহলে তোমার প্রতি আমার অনুভূতি পৃথিবীর সেরা অনুভূতি।🌻ღ🌺"
-    ];
+                        return message.reply({
+                                body: getLang("success"),
+                                attachment: fs.createReadStream(imgPath)
+                        }, () => {
+                                api.setMessageReaction("✅", event.messageID, () => {}, true);
+                                if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+                        });
 
-    const caption = captions[Math.floor(Math.random() * captions.length)];
-
-    return api.sendMessage(
-      {
-        body: caption,
-        attachment: fs.createReadStream(imgPath)
-      },
-      threadID,
-      () => fs.unlinkSync(imgPath),
-      messageID
-    );
-
-  } catch {
-    return api.sendMessage(
-      "API Error Call Boss SAHU",
-      threadID,
-      messageID
-    );
-  }
+                } catch (err) {
+                        console.error("Kiss Error:", err);
+                        api.setMessageReaction("❌", event.messageID, () => {}, true);
+                        if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+                        return message.reply(getLang("error", err.message));
+                }
+        }
 };

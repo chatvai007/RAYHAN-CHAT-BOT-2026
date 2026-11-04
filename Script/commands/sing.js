@@ -1,116 +1,97 @@
 const axios = require("axios");
-const fs = require('fs')
-const baseApiUrl = async () => {
-  const base = await axios.get(
-`https://raw.githubusercontent.com/Mostakim0978/D1PT0/refs/heads/main/baseApiUrl.json`,
-  );
-  return base.data.api;
-};
-module.exports.config = {
-    name: "sing",
-    version: "2.1.0",
-    aliases: [ "music", "play"],
-    credits: "dipto",
-    countDown: 5,
-    hasPermssion: 0,
-    description: "Download audio from YouTube",
-    category: "media",
-    commandCategory: "media",
-    usePrefix: true,
-    prefix: true,
-    usages: "{pn} [<song name>|<song link>]:"+ "\n   Example:"+"\n{pn} chipi chipi chapa chapa"
-  }
-  module.exports.run = async ({api,args, event,commandName, message }) =>{
-    const checkurl = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})(?:\S+)?$/;
-    let videoID;
-    const urlYtb = checkurl.test(args[0]);
-     
-if (urlYtb) {
-  const match = args[0].match(checkurl);
-  videoID = match ? match[1] : null;
-        const { data: { title, downloadLink } } = await axios.get(
-          `${await baseApiUrl()}/ytDl3?link=${videoID}&format=mp3`
-        );
-    return  api.sendMessage({
-      body: title,
-      attachment: await dipto(downloadLink,'audio.mp3')
-    },event.threadID,()=>fs.unlinkSync('audio.mp3'),event.messageID)
-}
-    let keyWord = args.join(" ");
-    keyWord = keyWord.includes("?feature=share") ? keyWord.replace("?feature=share", "") : keyWord;
-    const maxResults = 6;
-    let result;
-    try {
-      result = ((await axios.get(`${await baseApiUrl()}/ytFullSearch?songName=${keyWord}`)).data).slice(0, maxResults);
-    } catch (err) {
-      return api.sendMessage("❌ An error occurred:"+err.message,event.threadID,event.messageID);
-    }
-    if (result.length == 0)
-      return api.sendMessage("⭕ No search results match the keyword:"+ keyWord,event.threadID,event.messageID);
-    let msg = "";
-    let i = 1;
-    const thumbnails = [];
-    for (const info of result) {
-thumbnails.push(diptoSt(info.thumbnail,'photo.jpg'));
-      msg += `${i++}. ${info.title}\nTime: ${info.time}\nChannel: ${info.channel.name}\n\n`;
-    }
-    api.sendMessage({
-      body: msg+ "Reply to this message with a number want to listen",
-      attachment: await Promise.all(thumbnails)
-    },event.threadID, (err, info) => {
-global.client.handleReply.push({
-        name: this.config.name,
-        messageID: info.messageID,
-        author: event.senderID,
-        result
-      });
-    },event.messageID);
-  }
- module.exports.handleReply = async ({ event, api, handleReply }) => {
-    try {
-    const { result } = handleReply;
-    const choice = parseInt(event.body);
-    if (!isNaN(choice) && choice <= result.length && choice > 0) {
-      const infoChoice = result[choice - 1];
-      const idvideo = infoChoice.id;
-  const { data: { title, downloadLink ,quality} } = await axios.get(`${await baseApiUrl()}/ytDl3?link=${idvideo}&format=mp3`);
-    await api.unsendMessage(handleReply.messageID)
-        await  api.sendMessage({
-          body: `• Title: ${title}\n• Quality: ${quality}`,
-          attachment: await dipto(downloadLink,'audio.mp3')
-        },event.threadID ,
-       ()=>fs.unlinkSync('audio.mp3')
-      ,event.messageID)
-    } else {
-      api.sendMessage("Invalid choice. Please enter a number between 1 and 6.",event.threadID,event.messageID);
-    }
-    } catch (error) {
-      console.log(error);
-      api.sendMessage("⭕ Sorry, audio size was less than 26MB",event.threadID,event.messageID)
-    }   
- };
-async function dipto(url,pathName) {
-  try {
-    const response = (await axios.get(url,{
-      responseType: "arraybuffer"
-    })).data;
 
-    fs.writeFileSync(pathName, Buffer.from(response));
-    return fs.createReadStream(pathName);
-  }
-  catch (err) {
-    throw err;
-  }
-}
-async function diptoSt(url,pathName) {
-  try {
-    const response = await axios.get(url,{
-      responseType: "stream"
-    });
-    response.data.path = pathName;
-    return response.data;
-  }
-  catch (err) {
-    throw err;
-  }
-}
+const baseApiUrl = async () => (await axios.get("https://raw.githubusercontent.com/aura-mahmud/HINATA/main/baseApiUrl.json")).data.mahmud;
+
+module.exports = {
+        config: {
+                name: "sing",
+                version: "5.5",
+                author: "MahMUD",
+                countDown: 10,
+                role: 0,
+                description: "better then all sing",
+                category: "music",
+                guide: {
+                        en: '   {pn} <song name>: Download audio Default v1'
+                                + '\n   {pn} vN <name>: Use version N for audio e.g., v2, v3'
+                                + '\n   {pn} -v <name>: Download video Default v1'
+                                + '\n   {pn} vN -v <name>: Use version N for video'
+                                + '\n   {pn} list: See all available dynamic versions',
+                        vi: '   {pn} <tên bài hát>: Tải âm thanh Mặc định v1'
+                                + '\n   {pn} vN <tên>: Dùng phiên bản N cho âm thanh'
+                                + '\n   {pn} -v <tên>: Tải video Mặc định v1'
+                                + '\n   {pn} vN -v <tên>: Dùng phiên bản N cho video'
+                                + '\n   {pn} list: Xem tất cả phiên bản hiện có'
+                }
+        },
+        langs: {
+                en: {
+                        noInput: "× Baby, please provide a song or video name.",
+                        success: "✅ | 𝐇𝐞𝐫𝐞'𝐬 𝐲𝐨𝐮𝐫 𝐬𝐨𝐧𝐠 𝐛𝐚𝐛𝐲\n• 𝐒𝐢𝐧𝐠 𝐕𝐞𝐫𝐬𝐢𝐨𝐧: %2\n• 𝐒𝐢𝐧𝐠 𝐓𝐲𝐩𝐞: %3\n• 𝐒𝐞𝐚𝐫𝐜𝐡: %1",
+                        listFetchErr: "Failed to fetch the version list.",
+                        error: "× API error: %1. Contact MahMUD for help.\n•WhatsApp: 01836298139"
+                },
+                vi: {
+                        noInput: "× Bé ơi, vui lòng nhập tên bài hát hoặc video.",
+                        success: "✅ | 𝐁à𝐢 ðá𝐭 𝐜ủ𝐚 𝐛é đâ𝐲\n• 𝐏𝐡𝐢ê𝐧 𝐛ả𝐧: %2\n• 𝐋𝐨ạ𝐢: %3\n• 𝔗ì𝔪 𝔨𝔦ế𝔪: %1",
+                        listFetchErr: "Không thể lấy danh sách phiên bản.",
+                        error: "× Lỗi API: %1. Liên hệ MahMUD để được giúp đỡ.\n•WhatsApp: 01836298139"
+                }
+        },
+        onStart: async function ({ api, event, args, message, getLang }) {
+                const authorName = String.fromCharCode(77, 97, 104, 77, 85, 68);
+                if (this.config.author !== authorName) {
+                        return api.sendMessage("You are not authorized to change the author name.", event.threadID, event.messageID);
+                }
+
+                const { messageID } = event;
+
+                try {
+                        if (args[0] === "list") {
+                                const response = await axios.get(`${await baseApiUrl()}/api/sing/list`);
+                                const data = response.data;
+                                return data ? message.reply(`• 𝐓𝐨𝐭𝐚𝐥 𝐕𝐞𝐫𝐬𝐢𝐨𝐧: ${data.total}\n\n${data.versions.join(", ")}`) : message.reply(getLang("listFetchErr"));
+                        }
+
+                        let version = "v1";
+                        if (args[0]) {
+                                const arg0 = args[0].toLowerCase();
+                                if (/^v\d+$/.test(arg0)) {
+                                        version = args.shift().toLowerCase();
+                                } else if (/^version\d+$/.test(arg0)) {
+                                        version = "v" + arg0.replace("version", "");
+                                        args.shift();
+                                } else if (/^-v\d+$/.test(arg0)) {
+                                        version = "v" + arg0.replace("-v", "");
+                                        args.shift();
+                                }
+                        }
+
+                        let type = "audio";
+                        if (args[0]) {
+                                if (args[0] === "-v" || args[0] === "video") {
+                                        type = "video";
+                                        args.shift();
+                                }
+                        }
+
+                        const search = args.join(" ");
+                        if (!search) return message.reply(getLang("noInput"));
+
+                        api.setMessageReaction("⌛", messageID, () => {}, true);
+
+                        const response = await axios.get(`${await baseApiUrl()}/api/sing?version=${version}&search=${encodeURIComponent(search)}&type=${type}`, { responseType: "stream" });
+                        const stream = response.data;
+                        return message.reply({
+                                body: getLang("success", search, version, type),
+                                attachment: stream
+                        }, (error, info) => {
+                                api.setMessageReaction("🪽", event.messageID, () => {}, true);
+                        });
+
+                } catch (error) {
+                        api.setMessageReaction("❌", messageID, () => {}, true);
+                        return message.reply(getLang("error", error.message));
+                }
+        }
+};
